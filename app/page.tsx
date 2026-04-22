@@ -1,147 +1,217 @@
 import Link from "next/link";
-import { ArrowRight, Lock, Shield, Wrench } from "lucide-react";
 
-import { PricingCard } from "@/components/PricingCard";
-import { getAuthenticatedUser } from "@/lib/auth";
+import { buttonVariants } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
-const faq = [
+const faqs = [
   {
-    q: "Will this break existing users during migration?",
-    a: "No. The generator creates dual-auth transition middleware so you can accept both JWT and sessions while rolling out safely."
+    question: "What exactly gets scanned?",
+    answer:
+      "The analyzer scans your uploaded source files for JWT imports, bearer-token middleware, localStorage token persistence, and frontend request patterns that need session conversion."
   },
   {
-    q: "Does it support Next.js and Express in one monorepo?",
-    a: "Yes. The analyzer maps auth touchpoints per service and emits framework-specific migration files for each runtime."
+    question: "Do you rewrite my repository automatically?",
+    answer:
+      "No. You get a migration kit and a file-by-file cleanup checklist so your team can review each security change before applying it."
   },
   {
-    q: "Can my security team review generated changes before merge?",
-    a: "Every file includes an audit annotation header with rationale, risk notes, and links to cookie/session hardening guidance."
+    question: "How does access work after payment?",
+    answer:
+      "Checkout happens on Stripe Payment Links. After payment, your email is verified and this browser receives a secure access cookie that unlocks the dashboard."
+  },
+  {
+    question: "Can I use this during SOC 2 remediation?",
+    answer:
+      "Yes. The generated plan and code are designed for teams that need measurable risk reduction quickly before audits, enterprise procurement, or pen-tests."
   }
 ];
 
-export default async function HomePage() {
-  const user = await getAuthenticatedUser();
-  const signedIn = Boolean(user?.email);
+export default function HomePage() {
+  const paymentLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK;
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-10 md:px-8">
-      <header className="flex items-center justify-between border-b border-[#30363d] pb-6">
-        <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-[#58a6ff]">Developer Security Tooling</p>
-          <h1 className="mt-2 text-2xl font-bold text-white">jwt-session-converter</h1>
+    <main className="mx-auto w-full max-w-6xl px-4 pb-20 pt-8 sm:px-6 lg:px-8">
+      <header className="flex items-center justify-between">
+        <Link href="/" className="text-sm font-semibold tracking-wide text-[#9ecdf0]">
+          jwt-session-converter
+        </Link>
+        <div className="flex items-center gap-2">
+          <Link href="/unlock" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+            Unlock Access
+          </Link>
         </div>
-        <nav className="flex items-center gap-4 text-sm text-[#9ba7b4]">
-          <Link href="#pricing" className="hover:text-white">
-            Pricing
-          </Link>
-          <Link href="#faq" className="hover:text-white">
-            FAQ
-          </Link>
-          {signedIn ? (
-            <Link href="/dashboard" className="rounded-md border border-[#30363d] px-3 py-2 text-white hover:bg-[#151b23]">
-              Dashboard
-            </Link>
-          ) : (
-            <Link href="/login" className="rounded-md border border-[#30363d] px-3 py-2 text-white hover:bg-[#151b23]">
-              Sign In
-            </Link>
-          )}
-        </nav>
       </header>
 
-      <section className="grid gap-10 py-16 md:grid-cols-2 md:items-center">
+      <section className="mt-16 grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-center">
         <div>
-          <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#30363d] px-3 py-1 text-xs text-[#9ba7b4]">
-            <Shield className="h-3.5 w-3.5" />
-            Built for Series A-C engineering teams under audit pressure
+          <p className="inline-flex rounded-full border border-[#35506d] bg-[#0b1a2d] px-3 py-1 text-xs font-medium text-[#8fd4ff]">
+            Developer Security Tool - $19/month
           </p>
-          <h2 className="text-4xl font-black leading-tight text-white md:text-5xl">
-            Convert JWT auth to secure sessions without rewriting your app by hand.
-          </h2>
-          <p className="mt-5 text-lg text-[#9ba7b4]">
-            Scan your codebase, find vulnerable token storage patterns, and generate migration patches that move auth state to
-            hardened, server-side sessions with CSRF protection.
+          <h1 className="mt-6 text-4xl font-bold tracking-tight text-[#f0f6fc] sm:text-5xl">
+            Convert JWT auth to secure sessions before your security audit fails it.
+          </h1>
+          <p className="mt-5 max-w-2xl text-base text-[#a8bbce] sm:text-lg">
+            JWT Session Converter scans your codebase for JWT anti-patterns, highlights localStorage token exposure,
+            and generates a migration kit with server-side sessions, CSRF protection, and rollout steps your team can
+            ship this sprint.
           </p>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Link
-              href={signedIn ? "/dashboard" : "/login"}
-              className="inline-flex items-center rounded-md bg-[#2f81f7] px-5 py-3 text-sm font-semibold text-white hover:bg-[#1f6feb]"
-            >
-              {signedIn ? "Open Dashboard" : "Sign In to Start"}
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
+          <div className="mt-8 flex flex-wrap gap-3">
             <a
-              href="#pricing"
-              className="inline-flex items-center rounded-md border border-[#30363d] px-5 py-3 text-sm font-semibold text-[#c9d1d9] hover:bg-[#151b23]"
+              href={paymentLink ?? ""}
+              target="_blank"
+              rel="noreferrer"
+              className={buttonVariants({ size: "lg" })}
             >
-              View Pricing
+              Start Secure Migration
             </a>
+            <Link href="/unlock" className={buttonVariants({ variant: "outline", size: "lg" })}>
+              I already paid
+            </Link>
           </div>
+          <p className="mt-3 text-xs text-[#7e92a7]">Hosted checkout on Stripe. No card data touches your app.</p>
         </div>
-        <div className="rounded-2xl border border-[#30363d] bg-[#0f1722] p-6">
-          <h3 className="text-sm uppercase tracking-wide text-[#58a6ff]">What You Get</h3>
-          <div className="mt-4 space-y-4 text-sm text-[#c9d1d9]">
-            <p className="flex gap-2">
-              <Lock className="mt-0.5 h-4 w-4 text-[#58a6ff]" />
-              Detects localStorage token handling, Authorization header coupling, and JWT library usage across frontend and API
-              services.
-            </p>
-            <p className="flex gap-2">
-              <Wrench className="mt-0.5 h-4 w-4 text-[#58a6ff]" />
-              Generates Express and Next.js migration templates with secure cookie flags, session rotation, and CSRF strategy.
-            </p>
-            <p className="flex gap-2">
-              <Shield className="mt-0.5 h-4 w-4 text-[#58a6ff]" />
-              Outputs implementation plan and risk checklist you can hand directly to reviewers or auditors.
-            </p>
-          </div>
+
+        <Card className="glass-panel">
+          <CardHeader>
+            <CardTitle className="text-lg">Why teams buy this</CardTitle>
+            <CardDescription>Built for senior engineers and tech leads fixing inherited auth debt.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm text-[#cadef1]">
+            <p>Security audits repeatedly flag JWT storage in localStorage as high-risk XSS exposure.</p>
+            <p>Manual migration takes weeks across API middleware, frontend clients, and auth flows.</p>
+            <p>This tool narrows the work to a concrete checklist and production-ready scaffolding in minutes.</p>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section className="mt-20">
+        <h2 className="text-2xl font-semibold text-[#f0f6fc]">The problem your team is stuck with</h2>
+        <div className="mt-6 grid gap-4 md:grid-cols-3">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">XSS blast radius</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-[#a8bbce]">
+              Any injected script can exfiltrate tokens from localStorage and impersonate users until expiry.
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Refactor uncertainty</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-[#a8bbce]">
+              JWT logic is scattered across middleware, route guards, and API clients with inconsistent patterns.
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Audit deadlines</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-[#a8bbce]">
+              SOC 2 and enterprise sales cycles demand measurable remediation, not a best-effort cleanup plan.
+            </CardContent>
+          </Card>
         </div>
       </section>
 
-      <section className="grid gap-6 border-y border-[#30363d] py-12 md:grid-cols-3">
-        <div>
-          <h3 className="text-lg font-semibold text-white">The Problem</h3>
-          <p className="mt-2 text-sm text-[#9ba7b4]">
-            JWTs in browser storage are exposed to XSS. Teams know this, but replacing auth plumbing across UI, API, and
-            middleware is high-risk and usually delayed.
-          </p>
-        </div>
-        <div>
-          <h3 className="text-lg font-semibold text-white">The Solution</h3>
-          <p className="mt-2 text-sm text-[#9ba7b4]">
-            Automate the boring, risky parts. The CLI maps your auth flow, drafts migration files, and gives you a staged rollout
-            path with rollback checkpoints.
-          </p>
-        </div>
-        <div>
-          <h3 className="text-lg font-semibold text-white">Who Pays</h3>
-          <p className="mt-2 text-sm text-[#9ba7b4]">
-            Senior developers and tech leads preparing for SOC2, customer security reviews, or enterprise procurement audits.
-          </p>
+      <section className="mt-20">
+        <h2 className="text-2xl font-semibold text-[#f0f6fc]">What the platform delivers</h2>
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Automated JWT pattern analysis</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-[#a8bbce]">
+              Upload a zip of your project and get severity-ranked findings with exact files and lines that block a
+              secure migration.
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Session + CSRF migration kit</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-[#a8bbce]">
+              Download implementation code for session middleware, CSRF enforcement, auth routes, and client request
+              wrappers.
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Rollout-ready checklist</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-[#a8bbce]">
+              Move safely from dual-auth mode to full session auth with explicit verification steps for each release.
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Paywalled delivery</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-[#a8bbce]">
+              Access to the dashboard and generation endpoints is gated by a secure cookie unlocked after Stripe
+              purchase verification.
+            </CardContent>
+          </Card>
         </div>
       </section>
 
-      <section id="pricing" className="py-14">
-        <div className="mb-6">
-          <h3 className="text-3xl font-bold text-white">Pricing</h3>
-          <p className="mt-2 text-sm text-[#9ba7b4]">One plan, immediate value. Ship your migration this sprint, not next quarter.</p>
-        </div>
-        <div className="max-w-md">
-          <PricingCard email={user?.email} isAuthenticated={signedIn} />
-        </div>
+      <section className="mt-20">
+        <Card className="border-[#2c4f71] bg-[#0d1c2f]">
+          <CardHeader>
+            <CardTitle className="text-2xl">Pricing</CardTitle>
+            <CardDescription>One plan for teams that need to fix auth risk quickly.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-5">
+            <p className="text-4xl font-bold">
+              $19<span className="text-base font-medium text-[#9fb0c2]"> / month</span>
+            </p>
+            <ul className="space-y-2 text-sm text-[#cadef1]">
+              <li>Unlimited codebase scans</li>
+              <li>Unlimited migration kit downloads</li>
+              <li>Session + CSRF code scaffolding</li>
+              <li>Audit-focused migration checklist</li>
+            </ul>
+            <a
+              href={paymentLink ?? ""}
+              target="_blank"
+              rel="noreferrer"
+              className={cn(buttonVariants({ size: "lg" }), "w-full sm:w-auto")}
+            >
+              Buy with Stripe
+            </a>
+          </CardContent>
+        </Card>
       </section>
 
-      <section id="faq" className="border-t border-[#30363d] py-14">
-        <h3 className="text-3xl font-bold text-white">FAQ</h3>
-        <div className="mt-6 space-y-5">
-          {faq.map((entry) => (
-            <article key={entry.q} className="rounded-lg border border-[#30363d] bg-[#0f1722] p-5">
-              <h4 className="text-base font-semibold text-white">{entry.q}</h4>
-              <p className="mt-2 text-sm text-[#9ba7b4]">{entry.a}</p>
-            </article>
+      <section className="mt-20">
+        <h2 className="text-2xl font-semibold text-[#f0f6fc]">FAQ</h2>
+        <div className="mt-6 space-y-4">
+          {faqs.map((faq) => (
+            <Card key={faq.question}>
+              <CardHeader>
+                <CardTitle className="text-lg">{faq.question}</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-[#a8bbce]">{faq.answer}</CardContent>
+            </Card>
           ))}
         </div>
       </section>
+
+      <Separator className="mt-20" />
+
+      <footer className="mt-6 flex flex-col gap-3 pb-4 text-sm text-[#7f93a8] sm:flex-row sm:items-center sm:justify-between">
+        <p>JWT Session Converter helps security-conscious startups migrate from risky token storage patterns.</p>
+        <div className="flex gap-4">
+          <Link href="/unlock" className="hover:text-[#c8d8e7]">
+            Unlock Access
+          </Link>
+          <Link href="/dashboard" className="hover:text-[#c8d8e7]">
+            Dashboard
+          </Link>
+        </div>
+      </footer>
     </main>
   );
 }

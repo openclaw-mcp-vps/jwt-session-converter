@@ -1,30 +1,46 @@
 @import "tailwindcss";
 
 :root {
-  color-scheme: dark;
+  --background: #0d1117;
+  --foreground: #e6edf3;
+  --muted: #9ba7b4;
+  --panel: #111827;
+  --panel-strong: #161b22;
+  --border: #263041;
+  --accent: #4cc9f0;
+  --accent-strong: #22a6f2;
+  --success: #2ea043;
+  --danger: #f85149;
 }
 
 * {
-  border-color: #21262d;
+  border-color: var(--border);
 }
 
 html,
 body {
-  margin: 0;
   min-height: 100%;
-  background: #0d1117;
-  color: #e6edf3;
-  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+}
+
+body {
+  background: radial-gradient(circle at 0% 0%, #12314a 0%, var(--background) 34%),
+    radial-gradient(circle at 100% 100%, #1a2633 0%, var(--background) 44%);
+  color: var(--foreground);
+  font-family: "Space Grotesk", "Satoshi", "Avenir Next", "Segoe UI", sans-serif;
+  line-height: 1.5;
 }
 
 a {
   color: inherit;
-  text-decoration: none;
 }
 
-body {
-  background-image:
-    radial-gradient(circle at 10% -10%, rgba(56, 139, 253, 0.2), transparent 40%),
-    radial-gradient(circle at 90% 0%, rgba(35, 134, 54, 0.15), transparent 40%),
-    linear-gradient(180deg, #0d1117 0%, #0a0f14 100%);
+::selection {
+  background: #174b70;
+  color: #f0f6fc;
+}
+
+.glass-panel {
+  background: color-mix(in srgb, var(--panel-strong) 87%, transparent);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(6px);
 }
